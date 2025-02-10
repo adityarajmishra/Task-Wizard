@@ -15,9 +15,11 @@ import java.util.UUID;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Task extends BaseEntity {
     @NotBlank(message = "Title is required")
     private String title;
+    private UUID id;
 
     @NotBlank(message = "Description is required")
     private String description;

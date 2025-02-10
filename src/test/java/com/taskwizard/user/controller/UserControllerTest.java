@@ -1,6 +1,7 @@
 package com.taskwizard.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taskwizard.config.TestConfig;
 import com.taskwizard.user.domain.User;
 import com.taskwizard.user.dto.UserRequest;
 import com.taskwizard.user.service.UserService;
@@ -12,7 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
@@ -23,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @ExtendWith(MockitoExtension.class)
+@Import(TestConfig.class)
 class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -51,6 +55,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser
     void createUser_Success() throws Exception {
         when(userService.createUser(any(UserRequest.class))).thenReturn(testUser);
 
@@ -66,6 +71,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser
     void createUser_InvalidEmail() throws Exception {
         userRequest.setEmail("invalid-email");
 
@@ -78,6 +84,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getUser_Success() throws Exception {
         when(userService.getUserById(any(UUID.class))).thenReturn(testUser);
 
@@ -89,6 +96,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getUser_NotFound() throws Exception {
         when(userService.getUserById(any(UUID.class)))
                 .thenThrow(new ResourceNotFoundException("User not found"));

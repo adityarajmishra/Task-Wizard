@@ -34,10 +34,12 @@ class UserServiceTest {
     private UserService userService;
 
     private User testUser;
+    private UUID testUserId;
     private UserRequest userRequest;
 
     @BeforeEach
     void setUp() {
+        testUserId = UUID.randomUUID();
         testUser = User.builder()
                 .id(UUID.randomUUID())
                 .name("Test User")
@@ -79,7 +81,8 @@ class UserServiceTest {
 
     @Test
     void getUserById_Success() {
-        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(testUser));
+        UUID userId = testUser.getId();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
         User result = userService.getUserById(testUser.getId());
 
@@ -91,33 +94,38 @@ class UserServiceTest {
 
     @Test
     void getUserById_NotFound() {
-        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        UUID userId = testUser.getId();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () ->
-                userService.getUserById(UUID.randomUUID())
+                userService.getUserById(userId)
         );
-    }
-
-    @Test
-    void deleteUser_Success() {
-        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(testUser));
-        when(taskService.getTasksByUserId(any(UUID.class))).thenReturn(Collections.emptyList());
-
-        userService.deleteUser(testUser.getId());
-
-        verify(userRepository).deleteById(testUser.getId());
     }
 
     @Test
     void deleteUser_WithTasks() {
-        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(testUser));
-        when(taskService.getTasksByUserId(any(UUID.class)))
-                .thenReturn(List.of(Task.builder().build()));
+        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
+        when(taskService.getTasksByUserId(testUserId)).thenReturn(List.of(Task.builder().build()));
 
-        assertThrows(BusinessException.class, () ->
-                userService.deleteUser(testUser.getId())
+        BusinessException exception = assertThrows(BusinessException.class, () ->
+                userService.deleteUser(testUserId)
         );
+        assertEquals("Cannot delete user with existing tasks", exception.getMessage());
 
+        verify(userRepository).findById(testUserId);
+        verify(taskService).getTasksByUserId(testUserId);
         verify(userRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void deleteUser_Success() {
+        when(userRepository.findById(testUserId)).thenReturn(Optional.of(testUser));
+        when(taskService.getTasksByUserId(testUserId)).thenReturn(Collections.emptyList());
+
+        userService.deleteUser(testUserId);
+
+        verify(userRepository).findById(testUserId);
+        verify(taskService).getTasksByUserId(testUserId);
+        verify(userRepository).deleteById(testUserId);
     }
 }

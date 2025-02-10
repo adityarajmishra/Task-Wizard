@@ -1,6 +1,7 @@
 package com.taskwizard.task.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taskwizard.config.TestConfig;
 import com.taskwizard.task.domain.Task;
 import com.taskwizard.task.domain.TaskStatus;
 import com.taskwizard.task.dto.TaskRequest;
@@ -15,8 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TaskController.class)
 @ExtendWith(MockitoExtension.class)
+@Import(TestConfig.class)
 class TaskControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -65,6 +70,7 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser
     void createTask_Success() throws Exception {
         when(taskService.createTask(any(TaskRequest.class))).thenReturn(testTask);
 
@@ -80,6 +86,7 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser
     void createTask_InvalidRequest() throws Exception {
         taskRequest.setTitle("");  // Invalid title
 
@@ -92,6 +99,7 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser
     void getTasksByUser_Success() throws Exception {
         when(taskService.getTasksByUserId(any(UUID.class)))
                 .thenReturn(List.of(testTask));
@@ -105,6 +113,7 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser
     void updateTask_Success() throws Exception {
         TaskUpdateRequest updateRequest = TaskUpdateRequest.builder()
                 .status(TaskStatus.IN_PROGRESS)
@@ -124,6 +133,7 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser
     void deleteTask_Success() throws Exception {
         doNothing().when(taskService).deleteTask(any(UUID.class));
 
@@ -134,6 +144,7 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser
     void deleteTask_NotFound() throws Exception {
         doThrow(new ResourceNotFoundException("Task not found"))
                 .when(taskService).deleteTask(any(UUID.class));

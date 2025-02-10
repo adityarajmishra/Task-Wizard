@@ -1,0 +1,6 @@
+com/taskwizard/config/TestConfig.class
+com/taskwizard/task/repository/TaskRepositoryTest.class
+com/taskwizard/user/controller/UserControllerTest.class
+com/taskwizard/user/service/UserServiceTest.class
+com/taskwizard/task/controller/TaskControllerTest.class
+com/taskwizard/task/service/TaskServiceTest.class

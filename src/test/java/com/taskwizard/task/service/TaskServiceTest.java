@@ -34,11 +34,13 @@ class TaskServiceTest {
     private Task testTask;
     private TaskRequest taskRequest;
     private User testUser;
+    private UUID testUserId;
 
     @BeforeEach
     void setUp() {
+        testUserId = UUID.randomUUID();
         testUser = User.builder()
-                .id(UUID.randomUUID())
+                .id(testUserId)
                 .name("Test User")
                 .email("test@example.com")
                 .build();
@@ -48,14 +50,14 @@ class TaskServiceTest {
                 .title("Test Task")
                 .description("Test Description")
                 .status(TaskStatus.PENDING)
-                .userId(testUser.getId())
+                .userId(testUserId)
                 .build();
 
         taskRequest = TaskRequest.builder()
                 .title("Test Task")
                 .description("Test Description")
                 .status(TaskStatus.PENDING)
-                .userId(testUser.getId())
+                .userId(testUserId)
                 .build();
     }
 
@@ -111,37 +113,43 @@ class TaskServiceTest {
 
     @Test
     void getTasksByUserId_Success() {
-        when(userService.getUserById(any(UUID.class))).thenReturn(testUser);
-        when(taskRepository.findByUserId(any(UUID.class)))
-                .thenReturn(List.of(testTask));
+        List<Task> expectedTasks = Collections.singletonList(testTask);
+        when(taskRepository.findByUserId(testUserId)).thenReturn(expectedTasks);
 
-        List<Task> results = taskService.getTasksByUserId(testUser.getId());
+        List<Task> actualTasks = taskService.getTasksByUserId(testUserId);
 
-        assertFalse(results.isEmpty());
-        assertEquals(1, results.size());
-        assertEquals(testTask.getId(), results.get(0).getId());
+        assertNotNull(actualTasks);
+        assertFalse(actualTasks.isEmpty());
+        assertEquals(1, actualTasks.size());
 
-        verify(userService).getUserById(testUser.getId());
-        verify(taskRepository).findByUserId(testUser.getId());
+        Task actualTask = actualTasks.get(0);
+        assertEquals(testTask.getId(), actualTask.getId());
+        assertEquals(testTask.getTitle(), actualTask.getTitle());
+        assertEquals(testTask.getDescription(), actualTask.getDescription());
+        assertEquals(testTask.getStatus(), actualTask.getStatus());
+        assertEquals(testUserId, actualTask.getUserId());
+
+        verify(taskRepository).findByUserId(testUserId);
     }
 
     @Test
     void updateTask_Success() {
+        UUID taskId = testTask.getId();
         TaskUpdateRequest updateRequest = TaskUpdateRequest.builder()
                 .status(TaskStatus.IN_PROGRESS)
                 .description("Updated Description")
                 .build();
 
-        when(taskRepository.findById(any(UUID.class))).thenReturn(Optional.of(testTask));
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(testTask));
         when(taskRepository.save(any(Task.class))).thenReturn(testTask);
 
-        Task result = taskService.updateTask(testTask.getId(), updateRequest);
+        Task result = taskService.updateTask(taskId, updateRequest);
 
         assertNotNull(result);
         assertEquals(updateRequest.getStatus(), result.getStatus());
         assertEquals(updateRequest.getDescription(), result.getDescription());
 
-        verify(taskRepository).findById(testTask.getId());
+        verify(taskRepository).findById(taskId);
         verify(taskRepository).save(any(Task.class));
     }
 

@@ -10,7 +10,7 @@ import net.jcip.annotations.ThreadSafe;
 @Repository
 @ThreadSafe
 public class TaskRepository {
-    private final ConcurrentHashMap<UUID, Task> tasks = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<UUID, Task> tasks = new ConcurrentHashMap<>();
 
     public Task save(Task task) {
         tasks.put(task.getId(), task);
@@ -25,7 +25,7 @@ public class TaskRepository {
         return new ArrayList<>(tasks.values());
     }
 
-    public List<Task> findByUserId(UUID userId) {
+    public static List<Task> findByUserId(UUID userId) {
         return tasks.values().stream()
                 .filter(task -> task.getUserId().equals(userId))
                 .collect(Collectors.toList());

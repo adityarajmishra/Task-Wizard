@@ -12,7 +12,7 @@ public class UserRepository {
     private final ConcurrentHashMap<UUID, User> users = new ConcurrentHashMap<>();
 
     public User save(User user) {
-        users.put(user.getId(), user);
+        users.put(UUID.fromString(String.valueOf(user.getId())), user);
         return user;
     }
 

@@ -1,11 +1,14 @@
 package com.taskwizard.task.dto;
 
 import com.taskwizard.task.domain.TaskStatus;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
+@Setter
+@Getter
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskUpdateRequest {
     private String description;
     private TaskStatus status;

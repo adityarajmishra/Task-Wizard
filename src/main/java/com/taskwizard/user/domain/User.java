@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -14,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User extends BaseEntity {
     @NotBlank(message = "Name is required")
     private String name;
@@ -22,4 +25,6 @@ public class User extends BaseEntity {
     @NotBlank(message = "Email is required")
     @Column(unique = true)
     private String email;
+
+    private UUID id;
 }

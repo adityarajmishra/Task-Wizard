@@ -16,20 +16,25 @@ import java.util.UUID;
 @Service
 @Validated
 @Slf4j
-public class TaskService {
+public class TaskService implements TaskUserService {
     private final TaskRepository taskRepository;
-    private final UserService userService;
 
-    public TaskService(TaskRepository taskRepository, UserService userService) {
+    public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.userService = userService;
+    }
+
+    @Override
+    public List<Task> getTasksByUserId(UUID userId) {
+        return taskRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void validateUser(UUID userId) {
+        // This will be checked by UserService
     }
 
     @Transactional
     public Task createTask(TaskRequest request) {
-        // Verify user exists
-        userService.getUserById(request.getUserId());
-
         Task task = Task.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -49,13 +54,6 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Task> getTasksByUserId(UUID userId) {
-        // Verify user exists
-        userService.getUserById(userId);
-        return taskRepository.findByUserId(userId);
     }
 
     @Transactional
