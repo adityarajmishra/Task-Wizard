@@ -1,0 +1,47 @@
+-------------------------------------------------------------------------------
+Test set: com.taskwizard.task.service.TaskServiceTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 2, Errors: 1, Skipped: 0, Time elapsed: 0.151 s <<< FAILURE! -- in com.taskwizard.task.service.TaskServiceTest
+com.taskwizard.task.service.TaskServiceTest.createTask_UserNotFound -- Time elapsed: 0.019 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected com.taskwizard.common.exception.ResourceNotFoundException to be thrown, but nothing was thrown.
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3083)
+	at com.taskwizard.task.service.TaskServiceTest.createTask_UserNotFound(TaskServiceTest.java:88)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+
+com.taskwizard.task.service.TaskServiceTest.createTask_Success -- Time elapsed: 0.019 s <<< FAILURE!
+Wanted but not invoked:
+userService.getUserById(
+    3028a3f4-3c7d-4e7f-bdaf-a4800f4c6346
+);
+-> at com.taskwizard.user.service.UserService.getUserById(UserService.java:49)
+Actually, there were zero interactions with this mock.
+
+	at com.taskwizard.user.service.UserService.getUserById(UserService.java:49)
+	at com.taskwizard.task.service.TaskServiceTest.createTask_Success(TaskServiceTest.java:76)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+
+com.taskwizard.task.service.TaskServiceTest.getTasksByUserId_Success -- Time elapsed: 0.003 s <<< ERROR!
+org.mockito.exceptions.misusing.MissingMethodInvocationException: 
+
+when() requires an argument which has to be 'a method call on a mock'.
+For example:
+    when(mock.getArticles()).thenReturn(articles);
+
+Also, this error might show up because:
+1. you stub either of: final/private/equals()/hashCode() methods.
+   Those methods *cannot* be stubbed/verified.
+   Mocking methods declared on non-public parent classes is not supported.
+2. inside when() you don't call method on mock but on some other object.
+
+	at com.taskwizard.task.service.TaskServiceTest.getTasksByUserId_Success(TaskServiceTest.java:117)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+
